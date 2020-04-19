@@ -1,34 +1,34 @@
 [
   {
-    "customer": "Akelius",
-    "description": "Kund ett"
+    "Customer": "Akelius",
+    "Description": "Kund ett"
   },
   {
-    "customer": "Bofors",
-    "description": "Kund två"
+    "Customer": "Bofors",
+    "Description": "Kund tvÃ¥"
   },
   {
-    "customer": "Capio",
-    "description": "Kund tre"
+    "Customer": "Capio",
+    "Description": "Kund tre"
   },
   {
-    "customer": "DAFA AB",
-    "description": "Kund fyra"
+    "Customer": "DAFA AB",
+    "Description": "Kund fyra"
   },
   {
-    "customer": "EON",
-    "description": "Kund fem"
+    "Customer": "EON",
+    "Description": "Kund fem"
   },
   {
-    "customer": "Facit",
-    "description": "Kund sex"
+    "Customer": "Facit",
+    "Description": "Kund sex"
   },
   {
-    "customer": "Gambro",
-    "description": "Kund sju"
+    "Customer": "Gambro",
+    "Description": "Kund sju"
   },
   {
-    "customer": "HSB",
-    "description": "Kund åtta"
+    "Customer": "HSB",
+    "Description": "Kund Ã¥tta"
   }
 ]

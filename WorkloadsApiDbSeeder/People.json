@@ -1,58 +1,58 @@
 [
   {
-    "firstname": "Adam",
-    "lastname": "Adamsson",
-    "postalcode": "11111",
-    "city": "Alvesta",
-    "phone": "1234567890"
+    "Firstname": "Adam",
+    "Lastname": "Adamsson",
+    "Postalcode": "11111",
+    "City": "Alvesta",
+    "Phone": "1234567890"
   },
   {
-    "firstname": "Bertil",
-    "lastname": "Bertilsson",
-    "postalcode": "22222",
-    "city": "Boden",
-    "phone": "1234567890"
+    "Firstname": "Bertil",
+    "Lastname": "Bertilsson",
+    "Postalcode": "22222",
+    "City": "Boden",
+    "Phone": "1234567890"
   },
   {
-    "firstname": "Caesar",
-    "lastname": "Caesarsson",
-    "postalcode": "33333",
-    "city": "Charlottenberg",
-    "phone": "1234567890"
+    "Firstname": "Caesar",
+    "Lastname": "Caesarsson",
+    "Postalcode": "33333",
+    "City": "Charlottenberg",
+    "Phone": "1234567890"
   },
   {
-    "firstname": "David",
-    "lastname": "Davidsson",
-    "postalcode": "44444",
-    "city": "Djursholm",
-    "phone": "1234567890"
+    "Firstname": "David",
+    "Lastname": "Davidsson",
+    "Postalcode": "44444",
+    "City": "Djursholm",
+    "Phone": "1234567890"
   },
   {
-    "firstname": "Erik",
-    "lastname": "Eriksson",
-    "postalcode": "55555",
-    "city": "Eksjö",
-    "phone": "1234567890"
+    "Firstname": "Erik",
+    "Lastname": "Eriksson",
+    "Postalcode": "55555",
+    "City": "EksjÃ¶",
+    "Phone": "1234567890"
   },
   {
-    "firstname": "Filip",
-    "lastname": "Filipsson",
-    "postalcode": "66666",
-    "city": "Falköping",
-    "phone": "1234567890"
+    "Firstname": "Filip",
+    "Lastname": "Filipsson",
+    "Postalcode": "66666",
+    "City": "FalkÃ¶ping",
+    "Phone": "1234567890"
   },
   {
-    "firstname": "Gustav",
-    "lastname": "Gustavsson",
-    "postalcode": "77777",
-    "city": "Göteborg",
-    "phone": "1234567890"
+    "Firstname": "Gustav",
+    "Lastname": "Gustavsson",
+    "Postalcode": "77777",
+    "City": "GÃ¶teborg",
+    "Phone": "1234567890"
   },
   {
-    "firstname": "Henrik",
-    "lastname": "Henriksson",
-    "postalcode": "88888",
-    "city": "Halmstad",
-    "phone": "1234567890"
+    "Firstname": "Henrik",
+    "Lastname": "Henriksson",
+    "Postalcode": "88888",
+    "City": "Halmstad",
+    "Phone": "1234567890"
   }
 ]

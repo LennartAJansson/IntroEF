@@ -31,18 +31,18 @@ namespace WorkloadsApi.Controllers
             return await workloadService.GetUnfinishedWorkloadsAsync(personId, assignmentId);
         }
 
-        [HttpPost("{personId}&{assignmentId}&{comment}")]
-        public async Task<int> StartWorkloadAsync(int personId, int assignmentId, string comment)
+        [HttpPost("{personId}&{assignmentId}&{comment}&{dateTime}")]
+        public async Task<int> StartWorkloadAsync(int personId, int assignmentId, string comment, DateTimeOffset dateTime)
         {
             logger.LogInformation("Starting workload");
-            return await workloadService.StartWorkloadAsync(personId, assignmentId, comment, DateTimeOffset.UtcNow);
+            return await workloadService.StartWorkloadAsync(personId, assignmentId, comment, dateTime);
         }
 
-        [HttpPut("{workloadId}")]
-        public async Task StopWorkloadAsync(int workloadId)
+        [HttpPut("{workloadId}&{dateTime}")]
+        public async Task StopWorkloadAsync(int workloadId, DateTimeOffset dateTime)
         {
             logger.LogInformation("Stopping workload");
-            await workloadService.StopWorkloadAsync(workloadId, DateTimeOffset.UtcNow);
+            await workloadService.StopWorkloadAsync(workloadId, dateTime);
         }
 
         //[HttpDelete()]

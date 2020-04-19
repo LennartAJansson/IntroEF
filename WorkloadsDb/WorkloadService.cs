@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
+using Microsoft.Extensions.Logging;
+
 using WorkloadsDb.Abstract;
 using WorkloadsDb.Model;
 
@@ -10,9 +12,14 @@ namespace WorkloadsDb
 {
     public class WorkloadService : IWorkloadService
     {
+        private readonly ILogger<WorkloadService> logger;
         private readonly IUnitOfWork unitOfWork;
 
-        public WorkloadService(IUnitOfWork unitOfWork) => this.unitOfWork = unitOfWork;
+        public WorkloadService(ILogger<WorkloadService> logger, IUnitOfWork unitOfWork)
+        {
+            this.logger = logger;
+            this.unitOfWork = unitOfWork;
+        }
 
         public Task<IEnumerable<Person>> GetPeopleAsync()
         {
@@ -78,6 +85,8 @@ namespace WorkloadsDb
                 Stop = null
             };
 
+            logger.LogInformation($"Starting {workload.Comment} @ {workload.Start}");
+
             await unitOfWork.Repository<Workload>().InsertAsync(workload);
             await unitOfWork.SaveAsync();
 
@@ -91,6 +100,9 @@ namespace WorkloadsDb
             if (workload != null)
             {
                 workload.Stop = stop;
+
+                logger.LogInformation($"Stopping {workload.Comment} @ {workload.Stop}");
+
                 unitOfWork.Repository<Workload>().Update(workload);
                 await unitOfWork.SaveAsync();
             }
