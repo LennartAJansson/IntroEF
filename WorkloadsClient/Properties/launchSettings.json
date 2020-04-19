@@ -1,0 +1,13 @@
+{
+  "profiles": {
+    "WorkloadsClient": {
+      "commandName": "Project",
+      "commandLineArgs": "Sample:CommandLine=\"This is from the commandline\"",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development", //This value is for Worker
+        "ASPNETCORE_ENVIRONMENT": "Development", //This value is for ASP.NET
+        "Sample__Environment": "This is from the environment"
+      }
+    }
+  }
+}

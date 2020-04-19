@@ -1,0 +1,58 @@
+[
+  {
+    "firstname": "Adam",
+    "lastname": "Adamsson",
+    "postalcode": "11111",
+    "city": "Alvesta",
+    "phone": "1234567890"
+  },
+  {
+    "firstname": "Bertil",
+    "lastname": "Bertilsson",
+    "postalcode": "22222",
+    "city": "Boden",
+    "phone": "1234567890"
+  },
+  {
+    "firstname": "Caesar",
+    "lastname": "Caesarsson",
+    "postalcode": "33333",
+    "city": "Charlottenberg",
+    "phone": "1234567890"
+  },
+  {
+    "firstname": "David",
+    "lastname": "Davidsson",
+    "postalcode": "44444",
+    "city": "Djursholm",
+    "phone": "1234567890"
+  },
+  {
+    "firstname": "Erik",
+    "lastname": "Eriksson",
+    "postalcode": "55555",
+    "city": "Eksjö",
+    "phone": "1234567890"
+  },
+  {
+    "firstname": "Filip",
+    "lastname": "Filipsson",
+    "postalcode": "66666",
+    "city": "Falköping",
+    "phone": "1234567890"
+  },
+  {
+    "firstname": "Gustav",
+    "lastname": "Gustavsson",
+    "postalcode": "77777",
+    "city": "Göteborg",
+    "phone": "1234567890"
+  },
+  {
+    "firstname": "Henrik",
+    "lastname": "Henriksson",
+    "postalcode": "88888",
+    "city": "Halmstad",
+    "phone": "1234567890"
+  }
+]
