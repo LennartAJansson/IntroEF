@@ -20,7 +20,7 @@ namespace WorkloadsApi
         public void ConfigureServices(IServiceCollection services)
         {
             //Using the middleware pattern makes a loose coupling against Db concretion
-            services.AddWorkloadDb(configuration => configuration.GetConnectionString("Workloads"));
+            services.AddWorkloadDb(configuration => configuration.GetConnectionString("Workloads"), ServiceLifetime.Transient);
 
             //Disable reference loops in serialization/deserialization
             services.AddControllers()
