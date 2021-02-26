@@ -15,16 +15,16 @@ namespace WorkloadsDb.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.3")
+                .UseIdentityColumns()
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("ProductVersion", "5.0.1");
 
             modelBuilder.Entity("WorkloadsDb.Model.Assignment", b =>
                 {
                     b.Property<int>("AssignmentId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .UseIdentityColumn();
 
                     b.Property<string>("Customer")
                         .HasColumnType("nvarchar(max)");
@@ -42,7 +42,7 @@ namespace WorkloadsDb.Migrations
                     b.Property<int>("PersonId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .UseIdentityColumn();
 
                     b.Property<string>("City")
                         .HasColumnType("nvarchar(max)");
@@ -69,7 +69,7 @@ namespace WorkloadsDb.Migrations
                     b.Property<int>("WorkloadId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .UseIdentityColumn();
 
                     b.Property<int>("AssignmentId")
                         .HasColumnType("int");
@@ -108,6 +108,20 @@ namespace WorkloadsDb.Migrations
                         .HasForeignKey("PersonId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Assignment");
+
+                    b.Navigation("Person");
+                });
+
+            modelBuilder.Entity("WorkloadsDb.Model.Assignment", b =>
+                {
+                    b.Navigation("Workloads");
+                });
+
+            modelBuilder.Entity("WorkloadsDb.Model.Person", b =>
+                {
+                    b.Navigation("Workloads");
                 });
 #pragma warning restore 612, 618
         }

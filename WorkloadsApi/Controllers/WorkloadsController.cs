@@ -1,9 +1,8 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+
 using System.Collections.Generic;
 using System.Threading.Tasks;
-
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 
 using WorkloadsDb.Abstract;
 using WorkloadsDb.Model;
@@ -24,31 +23,33 @@ namespace WorkloadsApi.Controllers
         }
 
         //Workload CRUD, Create, Read, Update, Delete
+        [HttpGet()]
+        public async Task<IEnumerable<Workload>> GetAllWorkloadsAsync()
+        {
+            logger.LogInformation("Getting all workloads");
+            return await workloadService.GetAllWorkloadsAsync();
+        }
+
         [HttpGet("{personId}&{assignmentId}")]
         public async Task<IEnumerable<Workload>> GetUnfinishedWorkloadsAsync(int personId = 0, int assignmentId = 0)
         {
-            logger.LogInformation("Getting workloads");
+            logger.LogInformation($"Getting workloads for PersonId {personId} and AssignmentId {assignmentId}");
             return await workloadService.GetUnfinishedWorkloadsAsync(personId, assignmentId);
         }
 
-        [HttpPost("{personId}&{assignmentId}&{comment}&{dateTime}")]
-        public async Task<int> StartWorkloadAsync(int personId, int assignmentId, string comment, DateTimeOffset dateTime)
+        //Nya
+        [HttpPost()]
+        public async Task<Workload> StartWorkloadAsync([FromBody] Workload workload)
         {
             logger.LogInformation("Starting workload");
-            return await workloadService.StartWorkloadAsync(personId, assignmentId, comment, dateTime);
+            return await workloadService.StartWorkloadAsync(workload);
         }
 
-        [HttpPut("{workloadId}&{dateTime}")]
-        public async Task StopWorkloadAsync(int workloadId, DateTimeOffset dateTime)
+        [HttpPut()]
+        public async Task StopWorkloadAsync([FromBody] Workload workload)
         {
             logger.LogInformation("Stopping workload");
-            await workloadService.StopWorkloadAsync(workloadId, dateTime);
+            await workloadService.StopWorkloadAsync(workload);
         }
-
-        //[HttpDelete()]
-        //public void DeleteWorkload([FromBody]Workload workload)
-        //{
-
-        //}
     }
 }

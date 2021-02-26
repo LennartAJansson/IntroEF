@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 using WorkloadsDb.Abstract;
 using WorkloadsDb.Model;
@@ -33,22 +33,25 @@ namespace WorkloadsApi.Controllers
 
         [HttpPost]
         [Consumes("application/json")]
-        public async Task<int> CreatePersonAsync([FromBody]Person person)
+        [Produces("application/json")]
+        public async Task<Person> CreatePersonAsync([FromBody] Person person)
         {
             logger.LogInformation("Creating person");
             return await workloadService.CreatePersonAsync(person);
         }
 
-        //[HttpPut("people")]
-        //public void UpdatePerson([FromBody]Person person)
-        //{
-
-        //}
+        [HttpPut]
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        public async Task<Person> UpdatePerson([FromBody] Person person)
+        {
+            logger.LogInformation("Updating person");
+            return await workloadService.UpdatePersonAsync(person);
+        }
 
         //[HttpDelete("people")]
         //public void DeletePerson([FromBody]Person person)
         //{
-
         //}
     }
 }

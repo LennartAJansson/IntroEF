@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 using WorkloadsDb.Abstract;
 using WorkloadsDb.Model;
@@ -24,6 +24,7 @@ namespace WorkloadsApi.Controllers
 
         //Assignment CRUD, Create, Read, Update, Delete
         [HttpGet]
+        [Produces("application/json")]
         public async Task<IEnumerable<Assignment>> GetAssignmentsAsync()
         {
             logger.LogInformation("Getting assignment");
@@ -31,17 +32,22 @@ namespace WorkloadsApi.Controllers
         }
 
         [HttpPost]
-        public async Task<int> CreateAssignmentAsync([FromBody]Assignment assignment)
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        public async Task<Assignment> CreateAssignmentAsync([FromBody] Assignment assignment)
         {
             logger.LogInformation("Creating assignment");
             return await workloadService.CreateAssignmentAsync(assignment);
         }
 
-        //[HttpPut("assignment")]
-        //public void UpdateAssignment([FromBody]Assignment assignment)
-        //{
-        //  logger.LogInformation("");
-        //}
+        [HttpPut]
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        public async Task<Assignment> UpdateAssignment([FromBody] Assignment assignment)
+        {
+            logger.LogInformation("Updating assignment");
+            return await workloadService.UpdateAssignmentAsync(assignment);
+        }
 
         //[HttpDelete("assignment")]
         //public void DeleteAssignment([FromBody]Assignment assignment)

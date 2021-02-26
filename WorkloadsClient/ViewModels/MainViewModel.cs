@@ -1,16 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Windows;
-
-using GalaSoft.MvvmLight;
+﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 
 using Microsoft.Extensions.Logging;
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows;
+
 using WorkloadsDb.Abstract;
 using WorkloadsDb.Model;
-
 
 namespace WorkloadsClient.ViewModels
 {
@@ -36,6 +36,7 @@ namespace WorkloadsClient.ViewModels
                 SetWorkloads(SelectedPerson == null ? 0 : SelectedPerson.PersonId, SelectedAssignment == null ? 0 : SelectedAssignment.AssignmentId);
             }
         }
+
         private Person person;
 
         //When an assignment is selected then filter workloads on that assignment
@@ -49,6 +50,7 @@ namespace WorkloadsClient.ViewModels
                 SetWorkloads(SelectedPerson == null ? 0 : SelectedPerson.PersonId, SelectedAssignment == null ? 0 : SelectedAssignment.AssignmentId);
             }
         }
+
         private Assignment assignment;
 
         public Workload SelectedWorkload { get => workload; set => Set(ref workload, value); }
@@ -56,6 +58,7 @@ namespace WorkloadsClient.ViewModels
 
         //The list of values:
         public IEnumerable<Person> People { get => people; set => Set(ref people, value); }
+
         private IEnumerable<Person> people;
 
         public IEnumerable<Assignment> Assignments { get => assignments; set => Set(ref assignments, value); }
@@ -63,7 +66,6 @@ namespace WorkloadsClient.ViewModels
 
         public IEnumerable<Workload> Workloads { get => workloads; set => Set(ref workloads, value); }
         private IEnumerable<Workload> workloads;
-
 
         public RelayCommand GetCommand { get; }
         public RelayCommand ClearCommand { get; }
@@ -77,7 +79,7 @@ namespace WorkloadsClient.ViewModels
             GetCommand = new RelayCommand(async () => await GetAllAsync());
             ClearCommand = new RelayCommand(async () => await ClearAsync());
             CreateWorkloadCommand = new RelayCommand(async () => await CreateWorkloadAsync());
-            StopWorkloadCommand = new RelayCommand<int>(async (int parameter) => await StopWorkloadAsync(parameter));
+            StopWorkloadCommand = new RelayCommand<int>(async (int workloadId) => await StopWorkloadAsync(workloadId));
             ShowStartWorkload = Visibility.Collapsed;
         }
 
@@ -100,18 +102,26 @@ namespace WorkloadsClient.ViewModels
             if ((SelectedAssignment != null) && SelectedPerson != null)
             {
                 logger.LogInformation($"Starting work for Person {SelectedPerson} and Assignment {SelectedAssignment}");
-                await workloadsService.StartWorkloadAsync(SelectedPerson.PersonId, SelectedAssignment.AssignmentId, Comment, DateTimeOffset.UtcNow);
-                Comment = "";
+                var w = new Workload
+                {
+                    AssignmentId = SelectedAssignment.AssignmentId,
+                    PersonId = SelectedPerson.PersonId,
+                    Comment = "",
+                    Start = DateTimeOffset.UtcNow
+                };
+                await workloadsService.StartWorkloadAsync(w);
                 await GetWorkloadsAsync();
             }
         }
 
         private async Task StopWorkloadAsync(int workloadId)
         {
-            if (workloadId != 0)
+            SelectedWorkload = Workloads.FirstOrDefault(w => w.WorkloadId == workloadId);
+            if (SelectedWorkload != null)
             {
-                logger.LogInformation($"Stopping work for workload id {workloadId}");
-                await workloadsService.StopWorkloadAsync(workloadId, DateTimeOffset.UtcNow);
+                logger.LogInformation($"Stopping work for workload id {SelectedWorkload.WorkloadId}");
+                SelectedWorkload.Stop = DateTimeOffset.UtcNow;
+                await workloadsService.StopWorkloadAsync(SelectedWorkload);
                 await GetWorkloadsAsync();
             }
         }

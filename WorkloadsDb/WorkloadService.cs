@@ -1,9 +1,9 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+
+using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-
-using Microsoft.Extensions.Logging;
 
 using WorkloadsDb.Abstract;
 using WorkloadsDb.Model;
@@ -27,12 +27,41 @@ namespace WorkloadsDb
             //return Task.FromResult(unitOfWork.Repository<Person>().Get(includeProperties: "Workloads,Workloads.Assignment"));
             return Task.FromResult(unitOfWork.Repository<Person>().Get(includeProperties: "Workloads"));
         }
-        public async Task<int> CreatePersonAsync(Person person)
-        {
-            await unitOfWork.Repository<Person>().InsertAsync(person);
-            await unitOfWork.SaveAsync();
 
-            return person.PersonId;
+        public async Task<Person> CreatePersonAsync(Person person)
+        {
+            try
+            {
+                //TODO Find a better approach. This is only a workaround to make it possible to save without errors due to key violation
+                person.Workloads = null;
+
+                await unitOfWork.Repository<Person>().InsertAsync(person);
+                await unitOfWork.SaveAsync();
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error");
+            }
+
+            return person;
+        }
+
+        public async Task<Person> UpdatePersonAsync(Person person)
+        {
+            try
+            {
+                //TODO Find a better approach. This is only a workaround to make it possible to save without errors due to key violation
+                person.Workloads = null;
+
+                unitOfWork.Repository<Person>().Update(person);
+                await unitOfWork.SaveAsync();
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error");
+            }
+
+            return person;
         }
 
         public Task<IEnumerable<Assignment>> GetAssignmentsAsync()
@@ -42,12 +71,49 @@ namespace WorkloadsDb
             return Task.FromResult(unitOfWork.Repository<Assignment>().Get(includeProperties: "Workloads"));
         }
 
-        public async Task<int> CreateAssignmentAsync(Assignment assignment)
+        public async Task<Assignment> CreateAssignmentAsync(Assignment assignment)
         {
-            await unitOfWork.Repository<Assignment>().InsertAsync(assignment);
-            await unitOfWork.SaveAsync();
+            try
+            {
+                //TODO Find a better approach. This is only a workaround to make it possible to save without errors due to key violation
+                assignment.Workloads = null;
 
-            return assignment.AssignmentId;
+                await unitOfWork.Repository<Assignment>().InsertAsync(assignment);
+                await unitOfWork.SaveAsync();
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error");
+            }
+
+            return assignment;
+        }
+
+        public async Task<Assignment> UpdateAssignmentAsync(Assignment assignment)
+        {
+            try
+            {
+                //TODO Find a better approach. This is only a workaround to make it possible to save without errors due to key violation
+                assignment.Workloads = null;
+
+                unitOfWork.Repository<Assignment>().Update(assignment);
+                await unitOfWork.SaveAsync();
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error");
+            }
+
+            return assignment;
+        }
+
+        public Task<IEnumerable<Workload>> GetAllWorkloadsAsync()
+        {
+            //TODO! The outcommented is more correct but trashes the (de)serialization in the webapi controller
+            //IEnumerable<Workload> result = unitOfWork.Repository<Workload>().Get(includeProperties: "Person,Assignment");
+            IEnumerable<Workload> result = unitOfWork.Repository<Workload>().Get();
+
+            return Task.FromResult(result);
         }
 
         public Task<IEnumerable<Workload>> GetUnfinishedWorkloadsAsync(int personId = 0, int assignmentId = 0)
@@ -74,42 +140,43 @@ namespace WorkloadsDb
             return Task.FromResult(result);
         }
 
-        public async Task<int> StartWorkloadAsync(int personId, int assignmentId, string comment, DateTimeOffset start)
+        //Nya
+        public async Task<Workload> StartWorkloadAsync(Workload workload)
         {
-            Workload workload = new Workload
-            {
-                PersonId = personId,
-                AssignmentId = assignmentId,
-                Comment = comment,
-                Start = start,
-                Stop = null
-            };
-
             logger.LogInformation($"Starting {workload.Comment} @ {workload.Start}");
 
-            await unitOfWork.Repository<Workload>().InsertAsync(workload);
-            await unitOfWork.SaveAsync();
+            try
+            {
+                //TODO Find a better approach. This is only a workaround to make it possible to save without errors due to key violation
+                workload.Assignment = null;
+                workload.Person = null;
+                await unitOfWork.Repository<Workload>().InsertAsync(workload);
+                await unitOfWork.SaveAsync();
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error");
+            }
 
-            return workload.WorkloadId;
+            return workload;
         }
 
-        public async Task StopWorkloadAsync(int workloadId, DateTimeOffset stop)
+        public async Task StopWorkloadAsync(Workload workload)
         {
-            Workload workload = unitOfWork.Repository<Workload>().GetByID(workloadId);
+            logger.LogInformation($"Stopping {workload.Comment} @ {workload.Stop.Value.ToString()}");
 
-            if (workload != null)
+            try
             {
-                workload.Stop = stop;
-
-                logger.LogInformation($"Stopping {workload.Comment} @ {workload.Stop}");
-
+                //TODO Find a better approach. This is only a workaround to make it possible to save without errors due to key violation
+                workload.Assignment = null;
+                workload.Person = null;
                 unitOfWork.Repository<Workload>().Update(workload);
                 await unitOfWork.SaveAsync();
             }
-        }
-        public string GetCurrentDate()
-        {
-            return DateTime.Now.ToLongDateString();
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error");
+            }
         }
     }
 }

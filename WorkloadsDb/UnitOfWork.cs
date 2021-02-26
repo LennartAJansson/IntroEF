@@ -18,6 +18,8 @@ namespace WorkloadsDb
 
         public UnitOfWork(IWorkloadContext context) => this.context = context;
 
+        //POCO = Plain Old CLR Object
+        //CLR = Common language Runtime
         public IGenericRepository<TEntity> Repository<TEntity>() where TEntity : class, IPOCOClass
         {
             if (repositories.Keys.Contains(typeof(TEntity)) == true)

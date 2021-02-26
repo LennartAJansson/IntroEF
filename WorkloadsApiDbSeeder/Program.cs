@@ -11,12 +11,20 @@ using WorkloadsDb.Model;
 
 namespace WebApiEFDbSeeder
 {
-    class Program
+    internal class Program
     {
-        static readonly IEnumerable<Person> people = JsonSerializer.Deserialize<IEnumerable<Person>>(File.ReadAllText("people.json"), new JsonSerializerOptions { Encoder = System.Text.Encodings.Web.JavaScriptEncoder.Create(System.Text.Unicode.UnicodeRanges.All) });
-        static readonly IEnumerable<Assignment> assignments = JsonSerializer.Deserialize<IEnumerable<Assignment>>(File.ReadAllText("assignments.json"), new JsonSerializerOptions { Encoder = System.Text.Encodings.Web.JavaScriptEncoder.Create(System.Text.Unicode.UnicodeRanges.All) });
+        private static readonly IEnumerable<Person> people = JsonSerializer.Deserialize<IEnumerable<Person>>(File.ReadAllText("people.json"));
+        private static readonly IEnumerable<Assignment> assignments = JsonSerializer.Deserialize<IEnumerable<Assignment>>(File.ReadAllText("assignments.json"));
+        private static readonly string peopleUrl = Uri.EscapeUriString($"https://localhost:5001/people");
+        private static readonly string assignmentsUrl = Uri.EscapeUriString($"https://localhost:5001/assignments");
+        private static readonly string workloadsUrl = Uri.EscapeUriString($"https://localhost:5001/workloads");
 
-        static async Task Main()
+        private static readonly JsonSerializerOptions options = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        };
+
+        private static async Task Main()
         {
             using var client = new HttpClient();
             await AddPeopleAsync(client);
@@ -28,15 +36,15 @@ namespace WebApiEFDbSeeder
         {
             foreach (var person in people)
             {
-                HttpContent httpContent = new StringContent(
-                    JsonSerializer.Serialize(person, new JsonSerializerOptions { Encoder = System.Text.Encodings.Web.JavaScriptEncoder.Create(System.Text.Unicode.UnicodeRanges.All) }),
-                    Encoding.UTF8, "application/json");
+                string json = JsonSerializer.Serialize(person);
+                HttpContent httpContent = new StringContent(json, Encoding.UTF8, "application/json");
 
-                var response = await client.PostAsync("https://localhost:5001/people", httpContent);
-                var i = await response.Content.ReadAsStringAsync();
+                HttpResponseMessage response = await client.PostAsync(peopleUrl, httpContent);
+                json = await response.Content.ReadAsStringAsync();
+                Person result = JsonSerializer.Deserialize<Person>(json, options);
 
-                Console.WriteLine($"Added {i} status:\n\t{response.StatusCode}");
-                person.PersonId = int.Parse(i);
+                Console.WriteLine($"Added {result} status: {response.StatusCode}");
+                person.PersonId = result.PersonId;
             }
         }
 
@@ -44,60 +52,77 @@ namespace WebApiEFDbSeeder
         {
             foreach (var assignment in assignments)
             {
-                HttpContent httpContent = new StringContent(
-                    JsonSerializer.Serialize(assignment, new JsonSerializerOptions { Encoder = System.Text.Encodings.Web.JavaScriptEncoder.Create(System.Text.Unicode.UnicodeRanges.All) }),
-                    Encoding.UTF8, "application/json");
+                string json = JsonSerializer.Serialize(assignment);
+                HttpContent httpContent = new StringContent(json, Encoding.UTF8, "application/json");
 
-                var response = await client.PostAsync("https://localhost:5001/assignments", httpContent);
-                var i = await response.Content.ReadAsStringAsync();
+                HttpResponseMessage response = await client.PostAsync(assignmentsUrl, httpContent);
+                json = await response.Content.ReadAsStringAsync();
+                Assignment result = JsonSerializer.Deserialize<Assignment>(json, options);
 
-                Console.WriteLine($"Added {i} status:\n\t{response.StatusCode}");
-                assignment.AssignmentId = int.Parse(i);
+                Console.WriteLine($"Added {result} status: {response.StatusCode}");
+                assignment.AssignmentId = result.AssignmentId;
             }
         }
 
         private static async Task AddWorkloads(HttpClient client)
         {
             DateTimeOffset startDate = DateTimeOffset.UtcNow.AddDays(-21).StartOfWeek(DayOfWeek.Monday);
-            DateTimeOffset stopDate = DateTimeOffset.UtcNow;//.StartOfWeek(DayOfWeek.Friday); //Should be today!!!
+            DateTimeOffset stopDate = DateTimeOffset.UtcNow;
             Random random = new Random();
 
-            foreach (var person in people)
+            foreach (Person person in people)
             {
                 for (DateTimeOffset day = startDate; day.Date <= stopDate.Date; day = day.AddDays(1))
                 {
                     if (day.Hour == 0)
                         day = day.AddHours(8);
 
-                    //if (day.DayOfWeek == DayOfWeek.Saturday || day.DayOfWeek == DayOfWeek.Sunday)
-                    //    continue;
-
                     Assignment assignment = assignments.ToArray()[random.Next(0, assignments.Count() - 1)];
 
                     //Start a workload
-                    string comment = $"Working @ {assignment.Customer}";
-                    string start = $"{day}";
-                    var startUrl = Uri.EscapeUriString($"https://localhost:5001/workloads/{person.PersonId}&{assignment.AssignmentId}&{comment}&{start}");
+                    Workload workload = new Workload
+                    {
+                        AssignmentId = assignment.AssignmentId,
+                        PersonId = person.PersonId,
+                        Comment = $"Working @ {assignment.Customer}",
+                        Start = day
+                    };
+                    string json = JsonSerializer.Serialize(workload);
+                    HttpContent content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                    var response = await client.PostAsync(startUrl, null);
-                    var s = await response.Content.ReadAsStringAsync();
-                    var i = int.Parse(s);
+                    HttpResponseMessage response = await client.PostAsync(workloadsUrl, content);
+                    json = await response.Content.ReadAsStringAsync();
+                    Workload result = JsonSerializer.Deserialize<Workload>(json, options);
+                    workload.WorkloadId = result.WorkloadId;
 
-                    Console.WriteLine($"Id: {i} - {response.StatusCode}");
+                    //Fix result for displaying
+                    result.Person = person;
+                    result.PersonId = person.PersonId;
+                    result.Assignment = assignment;
+                    result.AssignmentId = assignment.AssignmentId;
+
+                    Console.WriteLine($"Started {result} status: {response.StatusCode}");
 
                     if (day.Date < stopDate.Date)
                     {
-                        string stop = $"{day.AddHours(9)}";
-                        var stopUrl = Uri.EscapeUriString($"https://localhost:5001/workloads/{i}&{stop}");
+                        workload.Stop = day.AddHours(9);
+                        json = JsonSerializer.Serialize(workload);
+                        content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                        response = await client.PutAsync(stopUrl, null);
+                        response = await client.PutAsync(workloadsUrl, content);
+                        response.EnsureSuccessStatusCode();
 
-                        Console.WriteLine($"Id: {i} - {response.StatusCode}");
+                        //Fix workload for displaying
+                        workload.Person = person;
+                        workload.Assignment = assignment;
+
+                        Console.WriteLine($"Stopped {workload} status: {response.StatusCode}");
                     }
                 }
             }
         }
     }
+
     public static class DateTimeExtensions
     {
         public static DateTimeOffset StartOfWeek(this DateTimeOffset dt, DayOfWeek startOfWeek)
